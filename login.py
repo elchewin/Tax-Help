@@ -45,6 +45,7 @@ tree.heading('Monto', text='Monto'  , anchor=CENTER)
 #llenando filas
 #get_Usuarios()
 
+
 #botones
 ttk.Button(text='Eliminar',command="del_Usuario").grid(row=5, column = 0, sticky = W+E)
 ttk.Button(text='Editar' ,command="edit_Usuario").grid(row=5, column = 1, sticky = W+E)
