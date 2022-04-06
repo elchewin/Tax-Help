@@ -35,3 +35,17 @@ def add_Usuario():
     else:
         message['text'] = 'Nombre y peso requeridos'
     get_Usuarios()
+
+'''
+    def get_products():
+    records = tree.get_children()
+    for element in records :
+        tree.delete(element)
+
+    query = 'SELECT * FROM boleta '
+    db_rows = run_query(query)
+    #rellenando datos 
+    for row in db_rows:
+        
+        tree.insert('', 0, text = row [1], values=[2])
+'''
