@@ -1,17 +1,12 @@
 from tkinter import ttk
 from tkinter import *
 
-import sqlite3
 import API
 
 #---------Librerias---------------------------------
 #estructura ventana "Usuarios"
-
 window = Tk()
-window.title('Login')
-
-
-
+window.title('Tax Help')
 
 
 #container
@@ -63,11 +58,5 @@ ttk.Button(frame2, text='Rutinas', command="win_Rutina").grid(row=5, column = 0,
 ttk.Button(frame2, text='Comidas del día', command="win_Comidas").grid(row=5, column = 1, sticky = W+E)
 ttk.Button(frame2, text='Progreso de Peso', command="win_P_peso").grid(row=6, column = 0, sticky = W+E)
 ttk.Button(frame2, text='Progreso de Medidas', command="win_P_medidas").grid(row=6, column = 1, sticky = W+E)
-
-
-#---------------------------------------------------------------------------------------------------------------------
-
-
-
 
 window.mainloop()
