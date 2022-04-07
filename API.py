@@ -1,40 +1,59 @@
+import sqlite3
+from tkinter import Entry
+from tkinter.ttk import Treeview
 
-def run_query(query, parameters = ()):
-    conn=sqlite3.connect(db_name)
-    c=conn.cursor()
+db_name = 'DataBase.db'
+conn = sqlite3.connect(db_name)
+c = conn.cursor()
+
+
+def run_query(query, parameters=()):
+    conn = sqlite3.connect(db_name)
+    c = conn.cursor()
     result = c.execute(query, parameters)
     conn.commit()
 
     return result
 
 
-def get_products():
-    query = 'SELECT * FROM boleta '
-    db_rows = run_query(query)
-    print(db_rows)
+def get_boleta(tree: Treeview):
+    # limpiando la tabla
+    records = tree.get_children
+    for element in records:
+        tree.delete(element)
 
-def add_Usuario():
-    if validate_Nombre():
-        records = tree.get_children()
-        for element in records:
-            tree.delete(element)
-        conn=sqlite3.connect(db_name)
-        c=conn.cursor()
-        c.execute('INSERT INTO Usuario VALUES(NULL,:nombre,:peso,NULL,NULL)',
-        {
-            'nombre':nombre.get(),
-            'peso':peso.get()
-        })
-        conn.commit()
-        conn.close()
+    conn = sqlite3.connect(db_name)
+    c = conn.cursor()
 
-        message['text'] = 'Usuario {} añadido satisfactoriamente'.format(nombre.get())
+    c.execute('SELECT * FROM Boleta ORDER BY N_boleta DESC')
+    db_filas = c.fetchall()
 
-        nombre.delete(0, END)
-        peso.delete(0, END)
-    else:
-        message['text'] = 'Nombre y peso requeridos'
-    get_Usuarios()
+    # recorriendo y rellenando los datos
+    for fila in db_filas:
+        tree.insert('', 0, text='', values=(fila[0], fila[1], fila[2]))
+    conn.commit()
+    conn.close()
+
+
+def add_boleta(mes, Monto, tree: Treeview):
+
+    records = tree.get_children()
+    for element in records:
+        tree.delete(element)
+
+    conn = sqlite3.connect(db_name)
+    c = conn.cursor()
+
+    c.execute('INSERT INTO Boletas VALUES(NULL,:mes,:Monto)',
+              {
+                  'mes': mes,
+                  'Monto': Monto
+              })
+    conn.commit()
+    conn.close()
+
+    get_boleta(tree)
+
 
 '''
     def get_products():
