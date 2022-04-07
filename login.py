@@ -38,7 +38,7 @@ def validate_boleta():
     return len(mes.get()) != 0 and len(Monto.get()) != 0
 
 
-def add_boleta1():
+def add_boleta():
 
     if validate_boleta():
         records = tree.get_children()
@@ -80,7 +80,7 @@ Monto.grid(row=2, column=1)
 
 
 # boton add usuario
-sub_b = Button(frame, text='Agregar boleta', command=add_boleta1)
+sub_b = Button(frame, text='Agregar boleta', command=add_boleta)
 sub_b .grid(row=3, columnspan=2, sticky=W+E)
 
 
