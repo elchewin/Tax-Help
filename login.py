@@ -1,3 +1,4 @@
+from math import trunc
 from msilib.schema import ComboBox
 from multiprocessing.sharedctypes import Value
 from tkinter import ttk
@@ -276,7 +277,10 @@ def taxHelp(montoTotal):
         factor = datos[0]
         cantRebajar = datos[1]
         impuRetenido = montoTotal*0.1225
-        return (montoTotal*factor)-cantRebajar-impuRetenido
+        if (factor == 1):
+            return trunc(impuRetenido)*-1
+        else:
+            return trunc((montoTotal*factor)-cantRebajar-impuRetenido)
     except IndexError as e:
         return 0
 
@@ -285,10 +289,10 @@ def taxHelp(montoTotal):
 frame2 = LabelFrame(window, text='Datos de interes')
 frame2.grid(row=6, column=0, columnspan=3, pady=10)
 # botones
-Label(frame2, text='-Monto total (*): '+str(montoTotal)
+Label(frame2, text='-Monto total (*): '+str(trunc(montoTotal))
       ).grid(row=5, column=0, sticky=W)
 Label(frame2, text='-Impuesto retenido: ' +
-      str(montoTotal*0.1225)).grid(row=6, column=0, sticky=W)
+      str(trunc(montoTotal*0.1225))).grid(row=6, column=0, sticky=W)
 
 res = taxHelp(montoTotal)
 
