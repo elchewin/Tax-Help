@@ -36,11 +36,24 @@ def edit_boleta():
     Label(edit_wind, text='Mes anterior: ').grid(row=0, column=1)
     Entry(edit_wind, textvariable=StringVar(edit_wind, value=old_mes),
           state='readonly').grid(row=0, column=2)
+
     # New MES
     Label(edit_wind, text='Nuevo Mes').grid(row=1, column=1)
     global new_mes
-    new_mes = ttk.Combobox(edit_wind, values=['enero', 'febrero', 'marzo', 'abril', 'mayo',
-                                              'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'])
+    new_mes = ttk.Combobox(edit_wind, values=[
+        'enero',
+        'febrero',
+        'marzo',
+        'abril',
+        'mayo',
+        'junio',
+        'julio',
+        'agosto',
+        'septiembre',
+        'octubre',
+        'noviembre',
+        'diciembre'
+    ])
     new_mes.grid(row=1, column=2)
 
     # Old MONTO
@@ -110,7 +123,7 @@ def del_boleta():
 
     ID_u = tree.item(tree.selection())['values'][0]
 
-    c.execute('DELETE FROM Boletas WHERE N_boleta='+str(ID_u))
+    c.execute('DELETE FROM Boletas WHERE N_boletas='+str(ID_u))
 
     conn.commit()
     conn.close()
@@ -147,14 +160,21 @@ def get_boleta():
     conn = sqlite3.connect(db_name)
     c = conn.cursor()
 
-    c.execute('SELECT * FROM Boletas ORDER BY N_boleta DESC')
+    c.execute('SELECT * FROM Boletas ORDER BY N_boletas DESC')
     db_filas = c.fetchall()
 
+    montoTotal = 0
     # recorriendo y rellenando los datos
     for fila in db_filas:
+        montoTotal = montoTotal+fila[2]
         tree.insert('', 0, text='', values=(fila[0], fila[1], fila[2]))
+
+    if(montoTotal < 9185220):
+        montoTotal = montoTotal*0.7
+
     conn.commit()
     conn.close()
+    return montoTotal
 
 
 def validate_boleta():
@@ -169,8 +189,20 @@ frame.grid(row=0, column=0, columnspan=3, pady=0)
 # mes input
 l_mes = Label(frame, text='Mes:')
 l_mes.grid(row=1, column=0, sticky=W)
-mes = ttk.Combobox(frame, values=['enero', 'febrero', 'marzo', 'abril', 'mayo',
-                                  'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'])
+mes = ttk.Combobox(frame, values=[
+    'enero',
+    'febrero',
+    'marzo',
+    'abril',
+    'mayo',
+    'junio',
+    'julio',
+    'agosto',
+    'septiembre',
+    'octubre',
+    'noviembre',
+    'diciembre'
+])
 mes.grid(row=1, column=1)
 
 # Monto input
@@ -227,15 +259,45 @@ ttk.Button(text='Editar', command=edit_boleta).grid(
     row=5, column=1, sticky=W+E)
 
 
+montoTotal = get_boleta()
+
+
+def taxHelp(montoTotal):
+    conn = sqlite3.connect(db_name)
+    c = conn.cursor()
+    c.execute('SELECT factor,cantidad_rebajar FROM Tramos WHERE desde<' +
+              str(montoTotal)+' AND hasta>'+str(montoTotal))
+    datos1 = c.fetchall()
+    conn.commit()
+    conn.close()
+    datos = datos1[0]
+    factor = datos[0]
+    cantRebajar = datos[1]
+    impuRetenido = montoTotal*0.1225
+
+    return (montoTotal*factor)-cantRebajar-impuRetenido
+
+
 # container2
 frame2 = LabelFrame(window, text='Datos de interes')
 frame2.grid(row=6, column=0, columnspan=3, pady=10)
-
 # botones
-Label(frame2, text='-Monto total*: ').grid(row=5, column=0, sticky=W)
-Label(frame2, text='-Impuesto retenido: ').grid(row=6, column=0, sticky=W)
-Label(frame2, text='-Tienes que pagar: ').grid(row=7, column=0, sticky=W)
-Label(frame2, text='*teniendo en cuenta el 30%').grid(row=8, column=0, sticky=W)
+Label(frame2, text='-Monto total (*): '+str(montoTotal)
+      ).grid(row=5, column=0, sticky=W)
+Label(frame2, text='-Impuesto retenido: ' +
+      str(montoTotal*0.1225)).grid(row=6, column=0, sticky=W)
+
+res = taxHelp(montoTotal)
+
+if(res < 0):
+    Label(frame2, text='-Te devuelven: '+str(res*-1)
+          ).grid(row=7, column=0, sticky=W)
+else:
+    Label(frame2, text='-Pagas: '+str(res)).grid(row=7, column=0, sticky=W)
+
+
+Label(window, text='(*) teniendo en cuenta el 30'+'%' +
+      ' de gastos presuntos').grid(row=8, column=0, sticky=W)
 
 
 window.mainloop()
