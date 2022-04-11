@@ -263,6 +263,7 @@ montoTotal = get_boleta()
 
 
 def taxHelp(montoTotal):
+
     conn = sqlite3.connect(db_name)
     c = conn.cursor()
     c.execute('SELECT factor,cantidad_rebajar FROM Tramos WHERE desde<' +
@@ -270,12 +271,14 @@ def taxHelp(montoTotal):
     datos1 = c.fetchall()
     conn.commit()
     conn.close()
-    datos = datos1[0]
-    factor = datos[0]
-    cantRebajar = datos[1]
-    impuRetenido = montoTotal*0.1225
-
-    return (montoTotal*factor)-cantRebajar-impuRetenido
+    try:
+        datos = datos1[0]
+        factor = datos[0]
+        cantRebajar = datos[1]
+        impuRetenido = montoTotal*0.1225
+        return (montoTotal*factor)-cantRebajar-impuRetenido
+    except IndexError as e:
+        return 0
 
 
 # container2
